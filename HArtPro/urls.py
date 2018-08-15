@@ -40,7 +40,6 @@ def toIndex(request):
     else:
         arts = Art.objects.all()
 
-
     # 将文章进行分页处理
     paginator = Paginator(arts, 10)  # 分页器
 
@@ -54,7 +53,6 @@ def toIndex(request):
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^ueditor/', include('DjangoUeditor.urls')),
+    url(r'^user/', include('user.urls')),
     url(r'^', toIndex),
 ]
-
-
