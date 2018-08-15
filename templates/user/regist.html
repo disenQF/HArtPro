@@ -3,20 +3,36 @@
     <div id="content" style="margin: 0 40px">
         <h1 class="text-center">用户注册页面</h1>
 
-        <form class="form form-horizontal">
+        <form class="form form-horizontal" method="post" action="/user/regist/">
+            {% csrf_token %}
+
             <div class="form-group">
                 <label class="col-md-2 control-label">用户名</label>
                 <div class="col-md-5">
-                    <input class="form-control" name="username" placeholder="输入用户名或手机号">
+                    <input class="form-control" name="username"
+                           value="{{ userForm.username.value }}"
+                           placeholder="输入用户名或手机号">
                 </div>
-                <div class="col-md-4">*长度8～20，可以是手机号或英文字母</div>
+                <div class="col-md-4">
+                    {% if errors.username %}
+                        <span style="color: red">{{ errors.username.0.message }}</span>
+                    {% else %}
+                        *长度8～20，可以是手机号或英文字母
+                    {% endif %}
+                </div>
             </div>
             <div class="form-group">
                 <label class="col-md-2 control-label">口令</label>
                 <div class="col-md-5">
                     <input class="form-control" type="password" name="passwd" placeholder="输入口令">
                 </div>
-                <div class="col-md-4">*长度不能低于8位，只能是字母和数字</div>
+                <div class="col-md-4">
+                    {% if errors.passwd %}
+                        <span style="color: red">{{ errors.passwd.0.message }}</span>
+                    {% else %}
+                        *长度不能低于8位，只能是字母和数字
+                    {% endif %}
+                </div>
             </div>
             <div class="form-group">
                 <label class="col-md-2 control-label">重复口令</label>
@@ -29,7 +45,12 @@
             <div class="form-group">
                 <label class="col-md-2 control-label">邮箱</label>
                 <div class="col-md-5">
-                    <input class="form-control" name="email" placeholder="输入邮箱">
+                    <input class="form-control" name="email" value="{{ userForm.email.value }}" placeholder="输入邮箱">
+                </div>
+                <div class="col-md-4">
+                    {% if errors.email %}
+                        <span style="color: red">{{ errors.email.0.message }}</span>
+                    {% endif %}
                 </div>
             </div>
             <div class="form-group">
