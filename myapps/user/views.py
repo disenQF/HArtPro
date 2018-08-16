@@ -2,6 +2,8 @@ import json
 import uuid
 
 import os
+
+from django.contrib.auth.hashers import check_password
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
@@ -11,7 +13,9 @@ from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
 
 from HArtPro import settings
+from user import helper
 from user.forms import UserForm
+from user.models import UserProfile
 
 
 def regist(request):
@@ -22,9 +26,8 @@ def regist(request):
         if userForm.is_valid(): # 判断必须要字段是否都存在数据
             user = userForm.save()  # 保存数据
             # 注册成功,将用户的id,用户名和头像地址写入到session(同时session数据存入到redis缓存中)
-            request.session['login_user'] = json.dumps({'id': user.id,
-                                                        'name': user.username,
-                                                        'photo': user.photo})
+            helper.addLoginSession(request,user)
+
             return redirect('/')
 
         # post提交时有验证错误，将验证错误转成json－> dict对象
@@ -57,3 +60,39 @@ def uploadPhoto(request):
 
     return JsonResponse({'status': 200,
                          'msg': '上传失败，目前请求只支持POST!'})
+
+
+def logout(request):
+    login_user = helper.getLoginInfo(request)
+    if login_user:
+        # 从session中删除登录信息
+        del request.session['login_user']
+        # request.session.clear()
+    return redirect('/')
+
+def login(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        passwd = request.POST.get('passwd')
+
+        errors = {}
+        if not username or len(username.strip()) < 8:
+            errors['username'] = [{'message': '用户名不能为空或不能低于8位字符'}]
+
+        if not passwd or len(passwd.strip()) < 8:
+            errors['passwd'] = [{'message': '口令不能为空或不能低于8位字符'}]
+
+        if not errors:
+            # 验证通过
+            qs = UserProfile.objects.filter(username=username)  # 返回queryset 查询结果
+            if not qs.exists():
+                errors['username'] = [{'message': '查无此用户!'}]
+            else:
+                user = qs.first()  # 读取查询结果中第一条记录
+                if not check_password(passwd, user.passwd):
+                    errors['passwd'] = [{'message': '口令错误！'}]
+                else:
+                    helper.addLoginSession(request, user)
+                    return redirect('/')
+
+    return render(request, 'user/login.html', locals())

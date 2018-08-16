@@ -13,3 +13,14 @@ def getLoginInfo(request)-> dict:
 
     print('--getLoginInfo---->',login_user)
     return login_user
+
+def addLoginSession(request, user):
+    '''
+    向session中添加登录用户的信息
+    :param request:
+    :param user:
+    :return:
+    '''
+    request.session['login_user'] = json.dumps({'id': user.id,
+                                                'name': user.username,
+                                                'photo': user.photo})
