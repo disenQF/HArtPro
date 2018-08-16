@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'DjangoUeditor',
     'user',
+    'djcelery'
 ]
 
 MIDDLEWARE = [
@@ -153,5 +154,19 @@ SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
 # --------end Session and Cache-----------
 
+# ----配置-- Celery------
+import djcelery
+djcelery.setup_loader()  # 装载djcelery项目
+
+# 配置消息中间件的位置
+BROKER_URL = 'redis://127.0.0.1:6379/12'
+CELERY_TIMEZONE = 'Asia/Shanghai'
+
+# CELERY_IMPORTS = ()
+
+# 配置批量调试器
+CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
+
+# -------end Celery--------
 
 
