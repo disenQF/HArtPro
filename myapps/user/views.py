@@ -20,7 +20,11 @@ def regist(request):
         # 通过ModelForm模型表单类 验证数据并保存到数据库中
         userForm = UserForm(request.POST)
         if userForm.is_valid(): # 判断必须要字段是否都存在数据
-            userForm.save()  # 保存数据
+            user = userForm.save()  # 保存数据
+            # 注册成功,将用户的id,用户名和头像地址写入到session(同时session数据存入到redis缓存中)
+            request.session['login_user'] = json.dumps({'id': user.id,
+                                                        'name': user.username,
+                                                        'photo': user.photo})
             return redirect('/')
 
         # post提交时有验证错误，将验证错误转成json－> dict对象
@@ -37,7 +41,7 @@ def uploadPhoto(request):
         uploadFile:InMemoryUploadedFile = request.FILES.get('photoImg')  # 上传文件表单的字段名为photoImg
 
         # 生成新的文件名
-        newFileName = str(uuid.uuid4()).replace('-','')+'.'+uploadFile.name.split('.')[-1]
+        newFileName = str(uuid.uuid4()).replace('-', '')+'.'+uploadFile.name.split('.')[-1]
 
         # 确定生成新的文件的目录
         dirPath = os.path.join(settings.BASE_DIR, 'static/users/photo/')

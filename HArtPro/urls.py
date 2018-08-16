@@ -13,6 +13,8 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+import json
+
 from django.conf.urls import url, include
 from django.core.paginator import Paginator
 from django.shortcuts import render
@@ -20,6 +22,7 @@ from django.db.models import aggregates, Count, F
 
 import xadmin as admin
 from art.models import Tag, Art
+from user import helper
 
 
 def toIndex(request):
@@ -46,6 +49,9 @@ def toIndex(request):
     page = request.GET.get('page')
     page = int(page) if page else 1  # 读取请求参数中page参数，如果没有,默认为1
     pager = paginator.page(page)  # 获取第一页的数据
+
+    # 获取登录用户的信息
+    login_user = helper.getLoginInfo(request)
 
     return render(request, 'index.html', locals())
 

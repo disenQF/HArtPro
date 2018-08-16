@@ -3,8 +3,8 @@ from django.db import models
 
 # Create your models here.
 class UserProfile(models.Model):
-    username = models.CharField(max_length=20,unique=True, verbose_name='用户名')
-    passwd = models.CharField(max_length=100,verbose_name='口令')
+    username = models.CharField(max_length=20, unique=True, verbose_name='用户名')
+    passwd = models.CharField(max_length=100, verbose_name='口令')
     email = models.CharField(max_length=50, unique=True, verbose_name='邮箱')
     photo = models.CharField(max_length=100, verbose_name='头像', blank=True, null=True)
 
@@ -12,7 +12,8 @@ class UserProfile(models.Model):
              update_fields=None):
 
         # ？？？修改用户邮箱时，口令没有改变的情况下，如何避免重复加密
-        self.passwd = make_password(self.passwd)  # 加密
+        if not self.passwd.startswith('pbkdf2_sha256') and len(self.passwd) <= 70:
+            self.passwd = make_password(self.passwd)  # 加密
         super().save()
 
     class Meta:
