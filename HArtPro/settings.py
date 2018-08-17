@@ -20,7 +20,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(BASE_DIR, 'extapps'))
 sys.path.insert(1, os.path.join(BASE_DIR, 'myapps'))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
@@ -31,7 +30,6 @@ SECRET_KEY = 'u89k(*p+qqpl*(0ma*33*t7(#+hqpcc*9ex^p8e#vspmpamvz%'
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-
 
 # Application definition
 
@@ -80,7 +78,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'HArtPro.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
@@ -90,7 +87,6 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
@@ -110,7 +106,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
 
@@ -123,7 +118,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
@@ -151,11 +145,11 @@ CACHES = {
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
-
 # --------end Session and Cache-----------
 
 # ----配置-- Celery------
 import djcelery
+
 djcelery.setup_loader()  # 装载djcelery项目
 
 # 配置消息中间件的位置
@@ -170,3 +164,39 @@ CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
 # -------end Celery--------
 
 
+# ----Django 配置 日志-----
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {  # 格式化
+        'simple': {
+            'format': '[%(asctime)s] %(filename)s %(lineno)d-> %(message)s',
+            'datefmt': '%Y-%m-%d %H:%M:%S'
+        },
+        'console': {
+            'format': '[%(asctime)s][%(levelname)s] %(pathname)s %(lineno)d-> %(message)s',
+            'datefmt': '%Y-%m-%d %H:%M:%S'
+        }
+    },
+    'handlers': {  # 处理器
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'console'
+        },
+        'fileHandler': {
+            'level': 'INFO',
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'formatter': 'simple',
+            'filename': 'art.log'
+        }
+    },
+    'loggers': {  # 记录器
+        'mdjango': {
+            'handlers': ['console', 'fileHandler'],
+            'level': 'INFO',
+            'propagate': False
+        }
+    }
+}
+# ----End Django 配置 日志-----
