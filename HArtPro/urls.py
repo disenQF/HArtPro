@@ -24,6 +24,8 @@ import xadmin as admin
 from art.models import Tag, Art
 from user import helper
 
+from api_ import router
+
 
 def toIndex(request):
     # 加载所有的分类
@@ -61,5 +63,7 @@ urlpatterns = [
     url(r'^ueditor/', include('DjangoUeditor.urls')),
     url(r'^user/', include('user.urls')),
     url(r'^art/', include('art.urls')),
+    url(r'^api-auth/', include('rest_framework.urls')),
+    url(r'^api/', include(router.urls)),
     url(r'^', toIndex),
 ]

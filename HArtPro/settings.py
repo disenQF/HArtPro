@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'crispy_forms',
     'DjangoUeditor',
     'user',
-    'djcelery'
+    'djcelery',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -200,3 +201,12 @@ LOGGING = {
     }
 }
 # ----End Django 配置 日志-----
+
+
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ]
+}
